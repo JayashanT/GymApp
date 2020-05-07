@@ -26,6 +26,7 @@ namespace gym.Services
             ICommonRepository<User> userRepository,
             ICommonRepository<Member> memberRepository,
             ICommonRepository<Admin> adminRepository,
+            ICommonRepository<Gym> gymRepository,
             IOptions<AppSettings> appsettings)
         {
             _userRepository = userRepository;
@@ -43,6 +44,10 @@ namespace gym.Services
 
             if (result!=null)
                 throw new ApplicationException("Mobile number" + memberDto.MobileNumber + "is alredy taken");
+
+            //var AllowedMembers=
+            var CountAllMembers = _memberRepository.GetAll().Count();
+            //if(CountAllMembers>=AllowedMembers)
 
             Member memberToAdd = Mapper.Map<Member>(memberDto);
 

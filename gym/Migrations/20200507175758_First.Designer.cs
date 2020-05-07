@@ -10,8 +10,8 @@ using gym.Entity;
 namespace gym.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20200422120032_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20200507175758_First")]
+    partial class First
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -101,6 +101,27 @@ namespace gym.Migrations
                     b.ToTable("Image");
                 });
 
+            modelBuilder.Entity("gym.Entity.MembershipType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DurationInMonths");
+
+                    b.Property<int>("Fee");
+
+                    b.Property<int>("GymId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GymId");
+
+                    b.ToTable("MembershipType");
+                });
+
             modelBuilder.Entity("gym.Entity.Shedule", b =>
                 {
                     b.Property<int>("Id")
@@ -133,7 +154,13 @@ namespace gym.Migrations
 
                     b.Property<short>("MobileNumber");
 
-                    b.Property<string>("Password");
+                    b.Property<byte[]>("PasswordHash");
+
+                    b.Property<byte[]>("PasswordSalt");
+
+                    b.Property<string>("Role");
+
+                    b.Property<string>("Token");
 
                     b.HasKey("Id");
 
@@ -159,9 +186,13 @@ namespace gym.Migrations
 
                     b.Property<string>("MembershipState");
 
-                    b.Property<string>("MembershipType");
+                    b.Property<int>("MembershipTypeID");
+
+                    b.Property<int?>("MembershipTypeId");
 
                     b.Property<string>("Name");
+
+                    b.HasIndex("MembershipTypeId");
 
                     b.HasDiscriminator().HasValue("Member");
                 });
@@ -187,6 +218,14 @@ namespace gym.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("gym.Entity.MembershipType", b =>
+                {
+                    b.HasOne("gym.Entity.Gym", "Gym")
+                        .WithMany()
+                        .HasForeignKey("GymId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("gym.Entity.Shedule", b =>
                 {
                     b.HasOne("gym.Entity.Member", "Member")
@@ -201,6 +240,13 @@ namespace gym.Migrations
                         .WithMany()
                         .HasForeignKey("GymId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("gym.Entity.Member", b =>
+                {
+                    b.HasOne("gym.Entity.MembershipType", "MembershipType")
+                        .WithMany()
+                        .HasForeignKey("MembershipTypeId");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,15 +15,17 @@ namespace gym.Services
     {
         private ICommonRepository<Shedule> _sheduleRepository;
         private ICommonRepository<Event> _eventRepository;
-        public SheduleService(ICommonRepository<Shedule> sheduleRepository, ICommonRepository<Event> eventRepository)
+        private ICommonRepository<EventRecord> _eventRecord;
+        public SheduleService(ICommonRepository<Shedule> sheduleRepository, ICommonRepository<Event> eventRepository,ICommonRepository<EventRecord> eventRecord)
         {
             _sheduleRepository = sheduleRepository;
             _eventRepository = eventRepository;
+            _eventRecord = eventRecord;
         }
 
         public IEnumerable<SheduleDto> GetAllSchedulesOfMember(int memberId)
         {
-            var allShedules = _sheduleRepository.Get(x => x.MemberId == memberId).OrderByDescending(x => x.CreatedAt);
+            var allShedules = _sheduleRepository.Get(x => x.MemberId == memberId).OrderByDescending(x => x.CreatedAt).ToList();
             var allShedulesdata = allShedules.Select(x => Mapper.Map<SheduleDto>(x));
             return allShedulesdata;
         }
@@ -78,9 +80,16 @@ namespace gym.Services
                 {
                     Shedule shedule = _sheduleRepository.Get(x => x.Id == SheduleId).FirstOrDefault();
                     List<Event> Events = _eventRepository.Get(x => x.SheduleId == SheduleId).ToList();
+                    
 
-                    foreach(var workout in Events)
+                    foreach (var workout in Events)
                     {
+                        List<EventRecord> EventRecords = _eventRecord.Get(x => x.EventId == workout.Id).ToList();
+                        foreach(var record in EventRecords)
+                        {
+                            _eventRecord.Remove(record);
+                            _eventRecord.Save();
+                        }
                         _eventRepository.Remove(workout);
                         _eventRepository.Save();
                     }

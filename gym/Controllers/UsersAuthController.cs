@@ -78,6 +78,23 @@ namespace gym.Controllers
         }
 
         [HttpPost]
+        [Route("Signup_admin")]
+        public IActionResult AdminSignUp([FromBody]AdminVM adminVM)
+        {
+            var adminToAdd = Mapper.Map<AdminDto>(adminVM);
+
+            try
+            {
+                var Result = _userServices.SignUp(adminToAdd, adminVM.Password);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { e.Message });
+            }
+        }
+
+        [HttpPost]
         [Route("SignIn")]
         public IActionResult SignIn([FromBody]LoginVM loginVM)
         {

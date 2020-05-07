@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace gym.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class First : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,23 +61,54 @@ namespace gym.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MembershipType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Fee = table.Column<int>(nullable: false),
+                    DurationInMonths = table.Column<int>(nullable: false),
+                    GymId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MembershipType", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MembershipType_Gym_GymId",
+                        column: x => x.GymId,
+                        principalTable: "Gym",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     MobileNumber = table.Column<short>(nullable: false),
-                    Password = table.Column<string>(nullable: true),
+                    PasswordHash = table.Column<byte[]>(nullable: true),
+                    PasswordSalt = table.Column<byte[]>(nullable: true),
+                    Token = table.Column<string>(nullable: true),
+                    Role = table.Column<string>(nullable: true),
                     GymId = table.Column<int>(nullable: false),
                     Discriminator = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     JoinedDate = table.Column<DateTime>(nullable: true),
                     MembershipState = table.Column<string>(nullable: true),
-                    MembershipType = table.Column<string>(nullable: true)
+                    MembershipTypeId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_MembershipType_MembershipTypeId",
+                        column: x => x.MembershipTypeId,
+                        principalTable: "MembershipType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_User_Gym_GymId",
                         column: x => x.GymId,
@@ -152,9 +183,19 @@ namespace gym.Migrations
                 column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MembershipType_GymId",
+                table: "MembershipType",
+                column: "GymId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shedule_MemberId",
                 table: "Shedule",
                 column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_MembershipTypeId",
+                table: "User",
+                column: "MembershipTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_GymId",
@@ -178,6 +219,9 @@ namespace gym.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "MembershipType");
 
             migrationBuilder.DropTable(
                 name: "Gym");
