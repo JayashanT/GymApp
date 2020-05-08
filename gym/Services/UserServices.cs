@@ -87,7 +87,7 @@ namespace gym.Services
             return Mapper.Map<AdminDto>(adminToAdd);
         }
 
-        public User Authenticate(short ContactNo, string Password)
+        public User Authenticate(string ContactNo, string Password)
         {
             if ( string.IsNullOrEmpty(Password))
                 throw new ApplicationException("Contact No or Password cannot be empty");

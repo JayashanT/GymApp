@@ -7,7 +7,7 @@ namespace gym.ViewModels
 {
     public class LoginVM
     {
-        public short ContactNo { get; set; }
+        public string ContactNo { get; set; }
         public string Password { get; set; }
     }
 }

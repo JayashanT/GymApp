@@ -8,7 +8,7 @@ namespace gym.Dtos
     public class MemberDto
     {
         public int Id { get; set; }
-        public short MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string Name { get; set; }

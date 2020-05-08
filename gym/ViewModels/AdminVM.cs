@@ -8,7 +8,7 @@ namespace gym.ViewModels
     public class AdminVM
     {
         public int Id { get; set; }
-        public short MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
         public string Token { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
